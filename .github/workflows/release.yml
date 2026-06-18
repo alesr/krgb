@@ -13,14 +13,14 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26"
+          go-version: "1.26.4"
           cache: true
 
       - name: Build
         run: |
           mkdir -p dist
-          GOARCH=amd64 go build -o dist/krgb_darwin_amd64 .
-          GOARCH=arm64 go build -o dist/krgb_darwin_arm64 .
+          CGO_ENABLED=1 GOARCH=amd64 go build -o dist/krgb_darwin_amd64 .
+          CGO_ENABLED=1 GOARCH=arm64 go build -o dist/krgb_darwin_arm64 .
 
       - name: Package
         run: |
