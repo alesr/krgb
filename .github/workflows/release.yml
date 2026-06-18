@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache: true
+
+      - name: Build
+        run: |
+          mkdir -p dist
+          GOARCH=amd64 go build -o dist/krgb_darwin_amd64 .
+          GOARCH=arm64 go build -o dist/krgb_darwin_arm64 .
+
+      - name: Package
+        run: |
+          TAG="${{ github.ref_name }}"
+          cd dist
+          tar czf "krgb_${TAG}_darwin_amd64.tar.gz" krgb_darwin_amd64
+          tar czf "krgb_${TAG}_darwin_arm64.tar.gz" krgb_darwin_arm64
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" dist/*.tar.gz --generate-notes
