@@ -2,7 +2,7 @@
 
 Go TUI for controlling Keychron K-series keyboard LED colors via raw HID.
 
-![screenshot](print.png)
+<img src="print.png" width="600" alt="krgb screenshot">
 
 ## Installation
 
