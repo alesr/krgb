@@ -2,26 +2,30 @@
 
 Go TUI for controlling Keychron K-series keyboard LED colors via raw HID.
 
+![screenshot](print.png)
+
 ## Installation
 
 ### Homebrew
 
-    brew install alesr/tap/krgb
+```sh
+brew tap alesr/tap https://github.com/alesr/krgb
+brew install krgb
+```
 
 ### Build from source
 
-    go install github.com/alesr/krgb@latest
+```sh
+git clone https://github.com/alesr/krgb
+cd krgb
+go build ./...
+```
 
 ## Usage
 
     krgb
 
 Requires a connected Keychron K-series keyboard with the raw HID interface.
-
-## Requirements
-
-- Keychron K-series keyboard with raw HID interface
-- Go 1.26.4 (to build from source)
 
 ## Platform Support
 
