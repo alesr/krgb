@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	CmdSetValue = 0x07
+	CmdSetValue   = 0x07
+	CmdSaveEEPROM = 0x09
 
 	ChanRGBMatrix = 0x03
 
@@ -17,15 +18,23 @@ const (
 	ValColor      = 4
 )
 
-func SetValue(dev *hid.Device, valueID byte, payload []byte) error {
+func writeCmd(dev *hid.Device, cmd, valueID byte, payload []byte) error {
 	buf := make([]byte, 32)
-	buf[1] = CmdSetValue
+	buf[1] = cmd
 	buf[2] = ChanRGBMatrix
 	buf[3] = valueID
 	copy(buf[4:], payload)
 
 	if _, err := dev.Write(buf); err != nil {
-		return xerrors.Wrap(xerrors.DeviceWrite, "via set_value failed", err)
+		return xerrors.Wrap(xerrors.DeviceWrite, "via write failed", err)
 	}
 	return nil
+}
+
+func SetValue(dev *hid.Device, valueID byte, payload []byte) error {
+	return writeCmd(dev, CmdSetValue, valueID, payload)
+}
+
+func SaveValue(dev *hid.Device, valueID byte, payload []byte) error {
+	return writeCmd(dev, CmdSaveEEPROM, valueID, payload)
 }

@@ -14,6 +14,15 @@ import (
 	"github.com/alesr/krgb/xerrors"
 )
 
+const (
+	focusEffect = iota
+	focusHue
+	focusSat
+	focusBrightness
+	focusSpeed
+	focusCount
+)
+
 type effectEntry struct {
 	name string
 	mode byte
@@ -96,12 +105,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "up", "k":
 			m.focus--
 			if m.focus < 0 {
-				m.focus = 4
+				m.focus = focusCount - 1
 			}
 
 		case "down", "j":
 			m.focus++
-			if m.focus > 4 {
+			if m.focus >= focusCount {
 				m.focus = 0
 			}
 
@@ -125,6 +134,33 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 
+			if m.device != nil {
+				var errs []string
+				if err := via.SaveValue(m.device, via.ValEffect, []byte{effects[m.effectIdx].mode}); err != nil {
+					errs = append(errs, err.Error())
+				}
+
+				if err := via.SaveValue(m.device, via.ValColor, []byte{byte(m.hue), byte(m.sat)}); err != nil {
+					errs = append(errs, err.Error())
+				}
+
+				if err := via.SaveValue(m.device, via.ValBrightness, []byte{byte(m.brightness)}); err != nil {
+					errs = append(errs, err.Error())
+				}
+
+				if err := via.SaveValue(m.device, via.ValSpeed, []byte{byte(m.speed)}); err != nil {
+					errs = append(errs, err.Error())
+				}
+
+				if len(errs) > 0 {
+					m.statusMsg = fmt.Sprintf("Config saved, but keyboard save failed: %s", strings.Join(errs, "; "))
+					return m, func() tea.Msg {
+						time.Sleep(3000 * time.Millisecond)
+						return clearStatusMsg{}
+					}
+				}
+			}
+
 			m.statusMsg = "Config saved"
 
 			return m, func() tea.Msg {
@@ -142,7 +178,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *model) changeFocused(dir int) {
 	switch m.focus {
-	case 0:
+	case focusEffect:
 		m.effectIdx += dir
 
 		if m.effectIdx < 0 {
@@ -155,28 +191,28 @@ func (m *model) changeFocused(dir int) {
 			via.SetValue(m.device, via.ValEffect, []byte{effects[m.effectIdx].mode})
 		}
 
-	case 1:
+	case focusHue:
 		m.hue = clamp(m.hue + dir*4)
 
 		if m.device != nil {
 			via.SetValue(m.device, via.ValColor, []byte{byte(m.hue), byte(m.sat)})
 		}
 
-	case 2:
+	case focusSat:
 		m.sat = clamp(m.sat + dir*4)
 
 		if m.device != nil {
 			via.SetValue(m.device, via.ValColor, []byte{byte(m.hue), byte(m.sat)})
 		}
 
-	case 3:
+	case focusBrightness:
 		m.brightness = clamp(m.brightness + dir*4)
 
 		if m.device != nil {
 			via.SetValue(m.device, via.ValBrightness, []byte{byte(m.brightness)})
 		}
 
-	case 4:
+	case focusSpeed:
 		m.speed = clamp(m.speed + dir*4)
 
 		if m.device != nil {

@@ -24,13 +24,15 @@ type Connection struct {
 func Find() (*Connection, error) {
 	var info *hid.DeviceInfo
 
-	hid.Enumerate(KeychronVID, hid.ProductIDAny, func(i *hid.DeviceInfo) error {
+	if err := hid.Enumerate(KeychronVID, hid.ProductIDAny, func(i *hid.DeviceInfo) error {
 		if i.UsagePage == UsagePage && i.Usage == UsageID &&
 			strings.HasPrefix(i.ProductStr, "Keychron K") {
 			info = i
 		}
 		return nil
-	})
+	}); err != nil {
+		return nil, xerrors.Wrap(xerrors.DeviceNotFound, "hid enumerate failed", err)
+	}
 
 	if info == nil {
 		return nil, ErrNotFound
