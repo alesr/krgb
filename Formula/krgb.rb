@@ -1,15 +1,15 @@
 class Krgb < Formula
   desc "TUI for controlling Keychron K-series keyboard LED colors via raw HID"
   homepage "https://github.com/alesr/krgb"
-  version "0.1.0"
+  version "0.1.1"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/alesr/krgb/releases/download/v0.1.0/krgb_v0.1.0_darwin_arm64.tar.gz"
-      sha256 "592fc0e4511f360b3dd11dbd784daa7782159ad52519ecb14be32026bd9f7655"
+      url "https://github.com/alesr/krgb/releases/download/v0.1.1/krgb_v0.1.1_darwin_arm64.tar.gz"
+      sha256 "fa7b01429c3f75d88d63731281b66d3c8e7c384830e77376d2b2aa1c4bcbeeda"
     else
-      url "https://github.com/alesr/krgb/releases/download/v0.1.0/krgb_v0.1.0_darwin_amd64.tar.gz"
-      sha256 "3f1e08535011012d98ce6b5d65c08c6e3bb071a7ca4fe2396a0868af164a38d8"
+      url "https://github.com/alesr/krgb/releases/download/v0.1.1/krgb_v0.1.1_darwin_amd64.tar.gz"
+      sha256 "e7f74dd2c43052cf3f3c71d9d3f389e5d62c3898716eb6a5731571c9f2e3927a"
     end
   end
 
